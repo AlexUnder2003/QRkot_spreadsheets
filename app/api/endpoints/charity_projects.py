@@ -127,10 +127,3 @@ async def update_charity_project(
     )
     await session.refresh(updated_project)
     return updated_project
-
-
-@router.get("/diffs")
-async def get_invested_days_diff(
-    session: AsyncSession = Depends(get_async_session),
-):
-    return await charity_project_crud.get_projects_by_completion_rate(session)

@@ -2,11 +2,9 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from app.core.constants import (
-    CHARITY_PROJECT_NAME_MIN_LENGTH,
-    CHARITY_PROJECT_NAME_MAX_LENGTH,
-    DESCRIPTION_MIN_LENGTH,
-)
+from app.core.constants import (CHARITY_PROJECT_NAME_MAX_LENGTH,
+                                CHARITY_PROJECT_NAME_MIN_LENGTH,
+                                DESCRIPTION_MIN_LENGTH)
 from app.schemas.base import InvestmentBaseSchema
 
 

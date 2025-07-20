@@ -1,7 +1,9 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from app.core.init import create_first_superuser
+
+from fastapi import FastAPI
+
 from app.api.router import router
+from app.core.init import create_first_superuser
 
 
 @asynccontextmanager

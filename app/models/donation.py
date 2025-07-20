@@ -1,9 +1,4 @@
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    Integer,
-    Text,
-)
+from sqlalchemy import Column, ForeignKey, Integer, Text
 
 from app.models.base import BaseInvestmentModel
 

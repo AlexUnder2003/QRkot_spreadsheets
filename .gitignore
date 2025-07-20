@@ -27,6 +27,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -109,6 +110,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+client_secret.json
 
 # Spyder project settings
 .spyderproject
@@ -130,3 +132,12 @@ dmypy.json
 
 # .idea
 .idea
+
+# ugc
+token.pickle
+
+# dev
+test.db
+fastapi.db
+
+client_secret.json

@@ -2,6 +2,7 @@ import os
 import pickle
 from typing import Tuple
 
+from aiogoogle import Aiogoogle
 from aiogoogle.auth.creds import ClientCreds, UserCreds
 from dotenv import load_dotenv
 from google.auth.transport.requests import Request
@@ -12,25 +13,26 @@ from app.core.constants import SCOPES
 
 load_dotenv()
 
+INFO = {
+    "type": settings.type,
+    "project_id": settings.project_id,
+    "private_key_id": settings.private_key_id,
+    "private_key": settings.private_key,
+    "client_email": settings.client_email,
+    "client_id": settings.client_id,
+    "auth_uri": settings.auth_uri,
+    "token_uri": settings.token_uri,
+    "auth_provider_x509_cert_url": settings.auth_provider_x509_cert_url,
+    "client_x509_cert_url": settings.client_x509_cert_url,
+}
+
 
 def auth() -> Tuple[ClientCreds, UserCreds]:
-    info = {
-        "installed": {
-            "client_id": settings.google_client_id,
-            "project_id": settings.google_project_id,
-            "auth_uri": settings.google_auth_uri,
-            "token_uri": settings.google_token_uri,
-            "auth_provider_x509_cert_url": settings.google_auth_provider_x509_cert_url,
-            "client_secret": settings.google_client_secret,
-            "redirect_uris": [settings.google_redirect_uri],
-        }
-    }
-
     client_creds = ClientCreds(
-        client_id=settings.google_client_id,
-        client_secret=settings.google_client_secret,
+        client_id=settings.client_id,
+        client_secret=settings.client_secret,
         scopes=SCOPES,
-        redirect_uri=settings.google_redirect_uri,
+        redirect_uri=settings.redirect_uri,
     )
 
     creds = None
@@ -42,19 +44,19 @@ def auth() -> Tuple[ClientCreds, UserCreds]:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(info, SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "client_secret.json", SCOPES
+            )
             creds = flow.run_local_server(port=0)
         with open("token.pickle", "wb") as token_file:
             pickle.dump(creds, token_file)
 
     user_creds = UserCreds(
-        token=creds.token,
+        access_token=creds.token,
         refresh_token=creds.refresh_token,
-        token_uri=creds.token_uri,
-        client_id=creds.client_id,
-        client_secret=creds.client_secret,
         scopes=creds.scopes,
-        expiry=creds.expiry.isoformat() if creds.expiry else None,
+        token_uri=creds.token_uri,
+        expires_at=creds.expiry,  # datetime or None
     )
 
     return client_creds, user_creds
@@ -64,7 +66,7 @@ client_creds, user_creds = auth()
 
 
 async def get_service():
-    async with aiogoogle(
+    async with Aiogoogle(
         client_creds=client_creds, user_creds=user_creds
-    ) as aiogoogle:
-        yield aiogoogle
+    ) as wrapper_service:
+        yield wrapper_service

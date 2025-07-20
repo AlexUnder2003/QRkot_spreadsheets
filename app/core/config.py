@@ -7,12 +7,20 @@ class Settings(BaseSettings):
     first_superuser_email: EmailStr = "nW3yG@example.com"
     first_superuser_password: str = "pass"
 
-    google_client_id: str
-    google_project_id: str
-    google_auth_uri: str
-    google_token_uri: str
-    google_auth_provider_x509_cert_url: str
-    google_client_secret: str
+    type: str
+    project_id: str
+    private_key_id: str
+    private_key: str
+    email: str
+    client_email: str
+    client_id: str
+    client_secret: str
+    redirect_uri: str
+    auth_uri: str
+    token_uri: str
+    auth_provider_x509_cert_url: str
+    client_x509_cert_url: str
+
     google_redirect_uri: str
 
     class Config:

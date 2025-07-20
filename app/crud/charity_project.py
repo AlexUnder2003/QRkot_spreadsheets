@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from fastapi import HTTPException
-from sqlalchemy import select, func, extract, cast, Integer
+from sqlalchemy import Integer, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base import CRUDBase
@@ -41,7 +41,7 @@ class CharityProjectCRUD(CRUDBase):
     async def get_projects_by_completion_rate(self, session: AsyncSession):
         days_diff_expr = cast(
             func.julianday(self.model.close_date)
-            - func.julianday(self.model.create_date),
+            - func.julianday(self.model.create_date), # noqa
             Integer,
         )
 

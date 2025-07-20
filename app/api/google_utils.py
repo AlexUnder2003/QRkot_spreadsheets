@@ -40,20 +40,19 @@ async def spreadsheets_update_value(
     service = await wrapper_service.discover("sheets", "v4")
     table_values = [
         ["Отчет от", now_date_time],
-        ["Количество регистраций переговорок"],
-        ["ID переговорки", "Кол-во бронирований", "Описание"],
+        ["Топ проектов по скорости закрытия"],
+        ["Название проекта", "Время сбора", "Описание"],
     ]
-    for res in data:
-        project_info = res["CharityProject"]
+    for project, days_diff in data:
         new_row = [
-            project_info["name"],
-            str((res["count"], project_info["name"])),
-            project_info["description"],
+            project.name,
+            str(days_diff),
+            project.description,
         ]
         table_values.append(new_row)
 
     update_body = {"majorDimension": "ROWS", "values": table_values}
-    response = await wrapper_service.as_user(
+    await wrapper_service.as_user(
         service.spreadsheets.values.update(
             spreadsheetId=spreadsheetid,
             range="A1:C30",
