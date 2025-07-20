@@ -1,0 +1,57 @@
+from http import HTTPStatus
+
+from fastapi import HTTPException
+from sqlalchemy import select, func, extract, cast, Integer
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.crud.base import CRUDBase
+from app.models.charity_project import CharityProject
+
+
+class CharityProjectCRUD(CRUDBase):
+    async def get_by_name(self, name: str, session: AsyncSession):
+        result = await session.execute(
+            select(self.model).where(self.model.name == name)
+        )
+        return result.scalars().first()
+
+    async def get_open_projects(self, session: AsyncSession):
+        result = await session.execute(
+            select(self.model).where(
+                self.model.fully_invested == False  # noqa
+            )
+        )
+        return result.scalars().all()
+
+    async def remove(
+        self,
+        db_obj,
+        session: AsyncSession,
+    ):
+        if db_obj.invested_amount > 0:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail="Нельзя удалить проект с инвестициями.",
+            )
+
+        await session.delete(db_obj)
+        await session.commit()
+        return db_obj
+
+    async def get_projects_by_completion_rate(self, session: AsyncSession):
+        days_diff_expr = cast(
+            func.julianday(self.model.close_date)
+            - func.julianday(self.model.create_date),
+            Integer,
+        )
+
+        stmt = (
+            select(self.model, days_diff_expr.label("days_diff"))
+            .where(self.model.fully_invested.is_(True))
+            .order_by(days_diff_expr.asc())
+        )
+        result = await session.execute(stmt)
+        return result.all()
+
+
+charity_project_crud = CharityProjectCRUD(CharityProject)
