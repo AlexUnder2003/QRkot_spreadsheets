@@ -56,7 +56,7 @@ def auth() -> Tuple[ClientCreds, UserCreds]:
         refresh_token=creds.refresh_token,
         scopes=creds.scopes,
         token_uri=creds.token_uri,
-        expires_at=creds.expiry,  # datetime or None
+        expires_at=creds.expiry,
     )
 
     return client_creds, user_creds
