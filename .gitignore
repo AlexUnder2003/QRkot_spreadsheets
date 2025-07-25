@@ -133,8 +133,7 @@ dmypy.json
 # .idea
 .idea
 
-# ugc
-token.pickle
+
 
 # dev
 test.db
