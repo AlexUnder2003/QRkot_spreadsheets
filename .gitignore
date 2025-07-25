@@ -133,8 +133,6 @@ dmypy.json
 # .idea
 .idea
 
-
-
 # dev
 test.db
 fastapi.db

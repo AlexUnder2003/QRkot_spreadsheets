@@ -1,5 +1,5 @@
 from aiogoogle import Aiogoogle
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.google_utils import spreadsheets_create, spreadsheets_update_value
@@ -25,9 +25,16 @@ async def google_import_to_sheets(
         session
     )
 
-    spreadsheet_id = await spreadsheets_create(wrapper_service)
-    await spreadsheets_update_value(spreadsheet_id, projects, wrapper_service)
-    spreadsheet_url = (
-        f"https://docs.google.com/spreadsheets/d/{spreadsheet_id}"
+    spreadsheet_id, spreadsheet_url = await spreadsheets_create(
+        wrapper_service
     )
+    try:
+        await spreadsheets_update_value(
+            spreadsheet_id, projects, wrapper_service
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ошибка при обновлении значений в таблице: {str(e)}",
+        )
     return spreadsheet_url

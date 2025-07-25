@@ -1,34 +1,23 @@
+from copy import deepcopy
 from datetime import datetime
 
 from aiogoogle import Aiogoogle
 
-from app.core.constants import REPORT_TIME_FORMAT
+from app.core.constants import REPORT_TIME_FORMAT, SPREADSHEET_BODY
 
 
 async def spreadsheets_create(wrapper_service: Aiogoogle) -> str:
     now_date_time = datetime.now().strftime(REPORT_TIME_FORMAT)
     service = await wrapper_service.discover("sheets", "v4")
-    spreadsheet_body = {
-        "properties": {
-            "title": f"Отчет на {now_date_time}",
-            "locale": "ru_RU",
-        },
-        "sheets": [
-            {
-                "properties": {
-                    "sheetType": "GRID",
-                    "sheetId": 0,
-                    "title": "Лист1",
-                    "gridProperties": {"rowCount": 4, "columnCount": 100},
-                }
-            }
-        ],
-    }
+    spreadsheet_body_template = deepcopy(SPREADSHEET_BODY)
+    spreadsheet_body = spreadsheet_body_template
+    spreadsheet_body["properties"]["title"] = spreadsheet_body["properties"][
+        "title"
+    ].format(now_date_time=now_date_time)
     response = await wrapper_service.as_user(
         service.spreadsheets.create(json=spreadsheet_body)
     )
-    spreadsheetid = response["spreadsheetId"]
-    return spreadsheetid
+    return response["spreadsheetId"], response["spreadsheetUrl"]
 
 
 async def spreadsheets_update_value(
