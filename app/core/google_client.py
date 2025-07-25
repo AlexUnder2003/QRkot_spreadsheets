@@ -6,7 +6,6 @@ from aiogoogle import Aiogoogle
 from aiogoogle.auth.creds import ClientCreds, UserCreds
 from dotenv import load_dotenv
 from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
 
 from app.core.config import settings
 from app.core.constants import SCOPES
@@ -43,11 +42,6 @@ def auth() -> Tuple[ClientCreds, UserCreds]:
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "client_secret.json", SCOPES
-            )
-            creds = flow.run_local_server(port=0)
         with open("token.pickle", "wb") as token_file:
             pickle.dump(creds, token_file)
 
