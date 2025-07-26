@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from aiogoogle import Aiogoogle
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,9 +34,9 @@ async def google_import_to_sheets(
         await spreadsheets_update_value(
             spreadsheet_id, projects, wrapper_service
         )
-    except Exception as e:
+    except ValueError as e:
         raise HTTPException(
-            status_code=500,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Ошибка при обновлении значений в таблице: {str(e)}",
         )
     return spreadsheet_url
